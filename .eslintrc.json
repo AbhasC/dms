@@ -1,0 +1,91 @@
+{
+  //npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint typescript eslint-plugin-import eslint-import-resolver-typescript
+  "$schema": "http://json.schemastore.org/eslintrc",
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "import"],
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/warnings"
+  ],
+  "rules": {
+    "max-len": ["error", 120],
+    "no-console": "error",
+    "camelcase": "error",
+    "react/jsx-indent-props": ["warn", 2],
+    "import/no-unresolved": "error",
+    "import/order": [
+      "warn",
+      {
+        "newlines-between": "never",
+        "groups": ["builtin", "external", "internal"],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "next",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "next/**",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "@material-ui",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "~/**",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "@src/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "@pages/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "@layouts/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "@components/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "@assets/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "~/styles/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "~/*.css",
+            "group": "internal",
+            "position": "after"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react"],
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off"
+  },
+  "ignorePatterns": ["node_modules", "**/*.js"]
+}
