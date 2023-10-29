@@ -1,10 +1,23 @@
 import { useUser } from "@auth0/nextjs-auth0/client";
+import axios from "axios";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 
 
 const Comp = () => {
+
   const { user, error, isLoading } = useUser();
+
+  useEffect(()=>{
+    if(user?.email){
+      axios.get("/api/fetch", {params : {
+        "email" : user.email
+      }}).then((res)=>{
+        console.log(res.data);
+      })
+    }
+  },[user]);
+
   if (user) {
     console.log(user)
     return (
@@ -18,6 +31,8 @@ const Comp = () => {
   else if(isLoading) return <div>Loading...</div>
   else return <Link href="/api/auth/login">Login</Link>
 }
+
+
 
 export default function Home() {  
   
