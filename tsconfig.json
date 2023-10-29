@@ -22,6 +22,7 @@
     "resolveJsonModule": true,
     "jsx": "preserve",
     "incremental": true,
+    "noUnusedParameters" : false,
     "paths": {
       "@/*": [
         "./*"

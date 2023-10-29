@@ -13,6 +13,7 @@
   "rules": {
     "max-len": ["error", 120],
     "no-console": "error",
+    "no-empty" : "warn",
     "camelcase": "error",
     "react/jsx-indent-props": ["warn", 2],
     "import/no-unresolved": "error",
