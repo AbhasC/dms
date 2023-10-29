@@ -86,7 +86,8 @@
       }
     ],
     "import/no-named-as-default": "off",
-    "import/no-named-as-default-member": "off"
+    "import/no-named-as-default-member": "off",
+    "react/no-children-prop" : "warn"
   },
   "ignorePatterns": ["node_modules", "**/*.js"]
 }
