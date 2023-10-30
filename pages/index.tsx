@@ -39,6 +39,18 @@ const Comp = () => {
       <Fragment>
         <div>Hello {user.email}</div>
         <Link href="/api/auth/logout">Logout</Link>
+        <Link href="/api/create-file">Create a file</Link>
+        {(()=>{
+          if(folder === "/"){
+            return (
+              <Link href="/api/create-folder">Create a folder</Link>
+            )
+          }
+          else{
+            return (<></>)
+          }
+        }
+        )()}
         <ul>
           <span>Folders : </span>
           <li onClick={()=>{
