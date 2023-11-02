@@ -2,6 +2,7 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import axios from "axios";
 import Link from "next/link";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { nanoid } from 'nanoid'
 
 interface File {
     "file-name" : string,
@@ -19,6 +20,7 @@ const Comp = () => {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const rootData = useRef<any>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   const { user, error, isLoading } = useUser();
 
@@ -34,23 +36,66 @@ const Comp = () => {
     }
   },[user]);
 
+  const clickHandler = () => {
+    if(dialogRef.current){
+      dialogRef.current?.showModal();
+    }
+  };
+
+  const fileCreationHandler = (e : any) => {
+    const filename = e.target[0].value;
+    const fileObj = {
+      "file-name" : filename,
+      "id" : nanoid(5)
+    }
+    if(rootData.current){
+      if(folder === "/")
+        rootData.current.files.push(fileObj);
+      else{
+        rootData.current.folders.forEach((elem : any)=>{
+          if("/"+elem["folder-name"] === folder)
+            elem.files.push(fileObj);
+        })
+      };
+    }
+    axios.post(("/api/update"), {
+      "newFormat" : rootData.current
+    });
+    if(user?.email){
+      axios.get("/api/fetch", {params : {
+        "email" : user.email
+      }}).then((res)=>{
+        rootData.current = res?.data?.data[0];
+        setFolders(res?.data?.data[0]?.folders ?? [])
+        if(folder === "/")
+          setFiles(res?.data?.data[0]?.files ?? [])
+        else{
+          rootData.current.folders.forEach((elem : any)=>{
+            if("/"+elem["folder-name"] === folder)
+              setFiles(elem.files ?? [])
+          })
+        };
+      })
+    }
+  }
+
   if (user) {
     return (
       <Fragment>
         <div>Hello {user.email}</div>
         <Link href="/api/auth/logout">Logout</Link>
-        <Link href="/api/create-file">Create a file</Link>
-        {(()=>{
-          if(folder === "/"){
-            return (
-              <Link href="/api/create-folder">Create a folder</Link>
-            )
-          }
-          else{
-            return (<></>)
-          }
-        }
-        )()}
+        <button onClick={clickHandler}>Create a file</button>
+        <dialog ref={dialogRef}>
+          <p>Give file name</p>
+          <form method="dialog" onSubmit={fileCreationHandler}>
+            <input type="text" placeholder="File name"></input>
+            <button>OK</button>
+          </form>
+        </dialog>
+        {folder === "/" ? (
+              //folder logic
+              <>ooga</>
+            ) : (<>booga</>)}
         <ul>
           <span>Folders : </span>
           <li onClick={()=>{
@@ -79,6 +124,9 @@ const Comp = () => {
             )
           })}
         </ul>
+        <button onClick={()=>{
+            console.log(rootData.current)
+          }}>Pankme</button>
       </Fragment>
     ) 
   }
