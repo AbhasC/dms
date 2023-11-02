@@ -20,7 +20,8 @@ const Comp = () => {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const rootData = useRef<any>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const fileDialogRef = useRef<HTMLDialogElement>(null);
+  const folderDialogRef = useRef<HTMLDialogElement>(null);
 
   const { user, error, isLoading } = useUser();
 
@@ -37,26 +38,42 @@ const Comp = () => {
   },[user]);
 
   const clickHandler = () => {
-    if(dialogRef.current){
-      dialogRef.current?.showModal();
+    if(fileDialogRef.current){
+      fileDialogRef.current?.showModal();
+    }
+  };
+
+  const clickFolderHandler = () => {
+    if(folderDialogRef.current){
+      folderDialogRef.current?.showModal();
     }
   };
 
   const fileCreationHandler = (e : any) => {
-    const filename = e.target[0].value;
-    const fileObj = {
-      "file-name" : filename,
-      "id" : nanoid(5)
+    if(e.target[0].placeholder == "File name"){
+      const filename = e.target[0].value;
+      const fileObj = {
+        "file-name" : filename,
+        "id" : nanoid(5)
+      }
+      if(rootData.current){
+        if(folder === "/")
+          rootData.current.files.push(fileObj);
+        else{
+          rootData.current.folders.forEach((elem : any)=>{
+            if("/"+elem["folder-name"] === folder)
+              elem.files.push(fileObj);
+          })
+        };
+      }
     }
-    if(rootData.current){
-      if(folder === "/")
-        rootData.current.files.push(fileObj);
-      else{
-        rootData.current.folders.forEach((elem : any)=>{
-          if("/"+elem["folder-name"] === folder)
-            elem.files.push(fileObj);
-        })
-      };
+    else {
+      const foldername = e.target[0].value;
+      const folderObj = {
+        "folder-name" : foldername,
+        "files" : []
+      }
+      rootData.current.folders.push(folderObj);
     }
     axios.post(("/api/update"), {
       "newFormat" : rootData.current
@@ -85,17 +102,23 @@ const Comp = () => {
         <div>Hello {user.email}</div>
         <Link href="/api/auth/logout">Logout</Link>
         <button onClick={clickHandler}>Create a file</button>
-        <dialog ref={dialogRef}>
+        <dialog ref={fileDialogRef}>
           <p>Give file name</p>
           <form method="dialog" onSubmit={fileCreationHandler}>
             <input type="text" placeholder="File name"></input>
             <button>OK</button>
           </form>
         </dialog>
+        <dialog ref={folderDialogRef}>
+          <p>Give folder name</p>
+          <form method="dialog" onSubmit={fileCreationHandler}>
+            <input type="text" placeholder="Folder name"></input>
+            <button>OK</button>
+          </form>
+        </dialog>
         {folder === "/" ? (
-              //folder logic
-              <>ooga</>
-            ) : (<>booga</>)}
+              <button onClick={clickFolderHandler}>Create a folder</button>
+            ) : (<></>)}
         <ul>
           <span>Folders : </span>
           <li onClick={()=>{
@@ -126,7 +149,7 @@ const Comp = () => {
         </ul>
         <button onClick={()=>{
             console.log(rootData.current)
-          }}>Pankme</button>
+          }}>Folder structure</button>
       </Fragment>
     ) 
   }
